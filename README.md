@@ -1,82 +1,63 @@
-<p align="center">
-  <img src="mobile/assets/logo/logo_full.svg" width="400" alt="Rekap In Logo">
-</p>
+<div align="center">
 
-<h3 align="center">Sistem Absensi Karyawan</h3>
+<img src="mobile/assets/logo/logo_icon.svg" width="100" alt="Rekap In">
 
-<p align="center">
-  Aplikasi mobile Flutter dengan backend Node.js untuk manajemen kehadiran karyawan.<br>
-  GPS check-in/out • selfie verification • offline queue • real-time dashboard
-</p>
+# Rekap In
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Flutter-3.4+-02569B?style=for-the-badge&logo=flutter&logoColor=white" alt="Flutter">
-  <img src="https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js">
-  <img src="https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
-  <img src="https://img.shields.io/badge/Prisma-5-2D3748?style=for-the-badge&logo=prisma&logoColor=white" alt="Prisma">
-</p>
+**Sistem Absensi Karyawan**
 
----
+[![Flutter](https://img.shields.io/badge/Flutter-3.4+-02569B?style=flat-square&logo=flutter)](https://flutter.dev)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=flat-square&logo=node.js)](https://nodejs.org)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=flat-square&logo=postgresql)](https://postgresql.org)
+[![License](https://img.shields.io/badge/License-Private-red?style=flat-square)](#)
 
-## Fitur
+GPS check-in/out • Selfie verification • Offline queue • Real-time dashboard
 
-<table>
-<tr>
-<td width="50%">
-
-### Mobile App
-- Absen masuk/pulang dengan GPS + selfie
-- Validasi radius lokasi kantor
-- Riwayat absensi harian & bulanan
-- Pengajuan izin/cuti dengan dokumen
-- Cek saldo cuti real-time
-- Notifikasi push & in-app
-- Mode offline dengan auto-sync
-- Dark mode & Light mode
-
-</td>
-<td width="50%">
-
-### Backend API
-- Auth JWT (RS256/HS256) + refresh token
-- Role hierarchy & akses control
-- Rate limiting & security headers
-- SSE real-time updates
-- Scheduler otomatis (reminder, eskalasi)
-- Audit log lengkap
-- REST API dengan OpenAPI docs
-
-</td>
-</tr>
-</table>
+</div>
 
 ---
 
-## Role Hierarchy
+## ✨ Fitur
+
+| Mobile | Backend |
+|--------|---------|
+| Absen masuk/pulang dengan GPS + selfie | Auth JWT (RS256/HS256) |
+| Validasi radius lokasi kantor | Role hierarchy & access control |
+| Riwayat absensi harian & bulanan | Rate limiting & security headers |
+| Pengajuan izin/cuti dengan dokumen | SSE real-time updates |
+| Cek saldo cuti real-time | Scheduler otomatis |
+| Notifikasi push & in-app | Audit log lengkap |
+| Mode offline dengan auto-sync | REST API + OpenAPI docs |
+| Dark mode & Light mode | Docker ready |
+
+---
+
+## 🏗️ Arsitektur
 
 ```
-SUPER_ADMIN (4) ──► HR (3) ──► MANAJER (2) ──► KARYAWAN (1)
+┌─────────────┐     SSE      ┌─────────────┐     Prisma     ┌─────────────┐
+│  Flutter    │ ◄──────────► │   Node.js   │ ◄────────────► │ PostgreSQL  │
+│  Mobile App │              │   Backend   │                │   Database  │
+└─────────────┘              └─────────────┘                └─────────────┘
+                                    │
+                                    ▼
+                             ┌─────────────┐
+                             │    Redis    │
+                             │   (Cache)   │
+                             └─────────────┘
 ```
-
-| Role | Akses |
-|------|-------|
-| **SUPER_ADMIN** | Full akses, kelola semua user & role |
-| **HR** | Kelola karyawan, approve cuti, review anomali |
-| **MANAJER** | Approve cuti team, lihat laporan |
-| **KARYAWAN** | Absen, riwayat, pengajuan izin |
 
 ---
 
-## Quick Start
+## 🚀 Quick Start
 
-### Backend
+### 1. Backend
 
-```powershell
-# 1. Start database
-cd D:\absensi
+```bash
+# Start database
 docker-compose up -d postgres redis
 
-# 2. Setup & jalankan
+# Setup
 cd backend
 npm install
 npx prisma generate
@@ -85,128 +66,108 @@ npm run seed
 npm run dev
 ```
 
-### Mobile
+### 2. Mobile
 
-```powershell
-cd D:\absensi\mobile
+```bash
+cd mobile
 flutter pub get
 flutter run
 ```
 
-### Build APK
+### 3. Build APK
 
-```powershell
+```bash
 flutter build apk
-# Output: build/app/outputs/flutter-apk/app-release.apk
+# → build/app/outputs/flutter-apk/app-release.apk
 ```
 
 ---
 
-## Akun Default
+## 👥 Akun Default
 
-| Role | Login | Password |
-|------|-------|----------|
-| SUPER_ADMIN | `f1qxzz` | `f1qxzz` |
-| HR | `hr` | `hr123` |
-| MANAJER | `manajer` | `manajer123` |
-| KARYAWAN | `karyawan` | `karyawan123` |
+| Role | Login | Password | Akses |
+|------|-------|----------|-------|
+| <img src="https://img.shields.io/badge/SUPER__ADMIN-7E22CE?style=flat-square" width="100"> | `f1qxzz` | `f1qxzz` | Full akses |
+| <img src="https://img.shields.io/badge/HR-2563EB?style=flat-square" width="60"> | `hr` | `hr123` | Kelola karyawan |
+| <img src="https://img.shields.io/badge/MANAJER-059669?style=flat-square" width="80"> | `manajer` | `manajer123` | Approve cuti |
+| <img src="https://img.shields.io/badge/KARYAWAN-6B7280?style=flat-square" width="80"> | `karyawan` | `karyawan123` | Absen & izin |
 
 > Login menggunakan email atau NIP
 
 ---
 
-## Workflow
+## 📱 Workflow
 
-<table>
-<tr>
-<td width="30%" align="center">
-  <img src="https://img.shields.io/badge/1-LOGIN-7E22CE?style=for-the-badge" alt="Login">
-</td>
-<td width="70%">
+```
+┌────────┐    ┌────────┐    ┌────────┐    ┌────────┐
+│ LOGIN  │───▶│ ABSEN  │───▶│  IZIN  │───▶│APPROVE │
+└────────┘    └────────┘    └────────┘    └────────┘
+   │              │              │              │
+   ▼              ▼              ▼              ▼
+JWT Auth      GPS+Selfie    Pilih Jenis    Manager→HR
+Role Check    Validasi       Upload Doc     Auto Saldo
+              Radius         Tanggal        Update
+```
 
-**Login** → Masukkan email/NIP & password → Verifikasi JWT → Akses dashboard sesuai role
-
-</td>
-</tr>
-<tr>
-<td align="center">
-  <img src="https://img.shields.io/badge/2-ABSEN-7E22CE?style=for-the-badge" alt="Absen">
-</td>
-<td>
-
-**Absen Masuk/Pulang** → Tap tombol → Ambil selfie → GPS check → Validasi radius → Kirim ke server
-
-</td>
-</tr>
-<tr>
-<td align="center">
-  <img src="https://img.shields.io/badge/3-IZIN-7E22CE?style=for-the-badge" alt="Izin">
-</td>
-<td>
-
-**Pengajuan Izin** → Pilih jenis → Atur tanggal → Isi alasan → Submit → Menunggu approval
-
-</td>
-</tr>
-<tr>
-<td align="center">
-  <img src="https://img.shields.io/badge/4-APPROVAL-7E22CE?style=for-the-badge" alt="Approval">
-</td>
-<td>
-
-**Approval** → Manager approve (≤3 hari) → HR approve (>3 hari) → Saldo cuti otomatis berkurang
-
-</td>
-</tr>
-</table>
+| Step | Karyawan | Manager/HR |
+|------|----------|------------|
+| **Login** | Email/NIP + Password | Email/NIP + Password |
+| **Absen** | Tap tombol → Selfie → GPS check | — |
+| **Izin** | Buat pengajuan → Upload dokumen | — |
+| **Approve** | — | Review → Setujui/Tolak |
+| **Dashboard** | Status hari ini, riwayat | Summary, anomali, laporan |
 
 ---
 
-## Struktur Project
+## 🔐 Role Hierarchy
 
 ```
-absensi/
-├── backend/
-│   ├── src/
-│   │   ├── modules/        # auth, attendance, leave, admin, payroll, reports, notifications
-│   │   ├── middleware/      # auth, validate, audit, errorHandler
-│   │   ├── jobs/            # scheduler
-│   │   └── lib/             # prisma, redis, sse
-│   ├── prisma/
-│   │   ├── schema.prisma
-│   │   └── seed.js
-│   └── tests/
-├── mobile/
-│   ├── lib/
-│   │   ├── app/             # AttendanceApp, AppTheme
-│   │   ├── core/            # api, camera, offline, realtime, storage
-│   │   └── features/        # auth, dashboard, attendance, leave, admin, profile
-│   └── assets/logo/         # Logo SVG
-├── docs/
-├── scripts/
-└── docker-compose.yml
+SUPER_ADMIN ──▶ HR ──▶ MANAJER ──▶ KARYAWAN
+    (4)         (3)      (2)         (1)
+```
+
+- **SUPER_ADMIN**: Tidak bisa diubah oleh role lain
+- **HR**: Kelola karyawan, approve cuti, review anomali
+- **MANAJER**: Approve cuti team (≤3 hari)
+- **KARYAWAN**: Absen, riwayat, pengajuan izin
+
+---
+
+## 📂 Struktur Project
+
+```
+rekap-in/
+├── backend/                # Node.js API
+│   ├── src/modules/        # Auth, Attendance, Leave, Admin
+│   ├── src/middleware/     # Auth, Validate, Audit
+│   ├── src/jobs/           # Scheduler
+│   └── prisma/             # Schema & Seed
+├── mobile/                 # Flutter App
+│   ├── lib/features/       # Auth, Dashboard, Attendance, Leave
+│   ├── lib/core/           # API, Camera, Offline, Realtime
+│   └── assets/logo/        # Logo SVG
+├── docs/                   # Dokumentasi
+└── docker-compose.yml      # Infrastructure
 ```
 
 ---
 
-## API Endpoints
+## 🔌 API Endpoints
 
 | Endpoint | Method | Role | Deskripsi |
 |----------|--------|------|-----------|
 | `/api/auth/login` | POST | Public | Login |
-| `/api/auth/register` | POST | Public | Daftar akun |
-| `/api/attendance/clock` | POST | All | Absen masuk/pulang |
+| `/api/auth/register` | POST | Public | Daftar |
+| `/api/attendance/clock` | POST | All | Absen |
 | `/api/attendance/today` | GET | All | Status hari ini |
-| `/api/leave-requests` | POST | All | Buat pengajuan |
-| `/api/admin/users` | GET | HR+ | Daftar karyawan |
-| `/api/admin/summary` | GET | HR+ | Dashboard summary |
-| `/api/events` | GET | All | SSE real-time stream |
-
-> Docs: `http://localhost:8080/api/docs` (development only)
+| `/api/leave-requests` | POST | All | Pengajuan |
+| `/api/admin/users` | GET | HR+ | Kelola user |
+| `/api/admin/summary` | GET | HR+ | Dashboard |
+| `/api/events` | GET | All | SSE stream |
 
 ---
 
-## Environment Variables
+## ⚙️ Environment
 
 ```env
 PORT=8080
@@ -219,6 +180,8 @@ APP_TIMEZONE=Asia/Jakarta
 
 ---
 
-<p align="center">
-  Built with ❤️ by Rekap In Team
-</p>
+<div align="center">
+
+**Rekap In** — Presensi kerja yang tertata.
+
+</div>
