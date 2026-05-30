@@ -11,7 +11,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=flat-square&logo=postgresql)](https://postgresql.org)
 [![License](https://img.shields.io/badge/License-Private-red?style=flat-square)](#)
 
-GPS check-in/out • Selfie verification • Offline queue • Real-time dashboard
+GPS check-in/out · Selfie verification · Offline queue · Real-time dashboard
 
 </div>
 
@@ -39,19 +39,19 @@ GPS check-in/out • Selfie verification • Offline queue • Real-time dashboa
 │  Flutter    │ ◄──────────► │   Node.js   │ ◄────────────► │ PostgreSQL  │
 │  Mobile App │              │   Backend   │                │   Database  │
 └─────────────┘              └─────────────┘                └─────────────┘
-                                    │
-                                    ▼
-                             ┌─────────────┐
-                             │    Redis    │
-                             │   (Cache)   │
-                             └─────────────┘
+                                     │
+                                     ▼
+                              ┌─────────────┐
+                              │    Redis    │
+                              │   (Cache)   │
+                              └─────────────┘
 ```
 
 ---
 
 ## 🚀 Quick Start
 
-### 1. Backend
+### Backend
 
 ```bash
 # Start database
@@ -66,7 +66,7 @@ npm run seed
 npm run dev
 ```
 
-### 2. Mobile
+### Mobile
 
 ```bash
 cd mobile
@@ -74,11 +74,11 @@ flutter pub get
 flutter run
 ```
 
-### 3. Build APK
+### Build APK
 
 ```bash
 flutter build apk
-# → build/app/outputs/flutter-apk/app-release.apk
+# Output: build/app/outputs/flutter-apk/app-release.apk
 ```
 
 ---
@@ -87,26 +87,26 @@ flutter build apk
 
 | Role | Login | Password | Akses |
 |------|-------|----------|-------|
-| <img src="https://img.shields.io/badge/SUPER__ADMIN-7E22CE?style=flat-square" width="100"> | `f1qxzz` | `f1qxzz` | Full akses |
-| <img src="https://img.shields.io/badge/HR-2563EB?style=flat-square" width="60"> | `hr` | `hr123` | Kelola karyawan |
-| <img src="https://img.shields.io/badge/MANAJER-059669?style=flat-square" width="80"> | `manajer` | `manajer123` | Approve cuti |
-| <img src="https://img.shields.io/badge/KARYAWAN-6B7280?style=flat-square" width="80"> | `karyawan` | `karyawan123` | Absen & izin |
+| **SUPER_ADMIN** | `f1qxzz` | `f1qxzz` | Full akses |
+| **HR** | `hr` | `hr123` | Kelola karyawan |
+| **MANAJER** | `manajer` | `manajer123` | Approve cuti |
+| **KARYAWAN** | `karyawan` | `karyawan123` | Absen & izin |
 
-> Login menggunakan email atau NIP
+> Login menggunakan email atau NIP.
 
 ---
 
 ## 📱 Workflow
 
 ```
-┌────────┐    ┌────────┐    ┌────────┐    ┌────────┐
-│ LOGIN  │───▶│ ABSEN  │───▶│  IZIN  │───▶│APPROVE │
-└────────┘    └────────┘    └────────┘    └────────┘
-   │              │              │              │
-   ▼              ▼              ▼              ▼
-JWT Auth      GPS+Selfie    Pilih Jenis    Manager→HR
-Role Check    Validasi       Upload Doc     Auto Saldo
-              Radius         Tanggal        Update
+┌────────┐         ┌────────┐         ┌────────┐         ┌────────┐
+│ LOGIN  │────────▶│ ABSEN  │────────▶│  IZIN  │────────▶│APPROVE │
+└────────┘         └────────┘         └────────┘         └────────┘
+   │                  │                  │                  │
+   ▼                  ▼                  ▼                  ▼
+ JWT Auth          GPS+Selfie        Pilih Jenis        Manager→HR
+ Role Check        Validasi          Upload Doc         Auto Saldo
+                   Radius            Tanggal            Update
 ```
 
 | Step | Karyawan | Manager/HR |
@@ -126,10 +126,10 @@ SUPER_ADMIN ──▶ HR ──▶ MANAJER ──▶ KARYAWAN
     (4)         (3)      (2)         (1)
 ```
 
-- **SUPER_ADMIN**: Tidak bisa diubah oleh role lain
-- **HR**: Kelola karyawan, approve cuti, review anomali
-- **MANAJER**: Approve cuti team (≤3 hari)
-- **KARYAWAN**: Absen, riwayat, pengajuan izin
+- **SUPER_ADMIN** — Tidak bisa diubah oleh role lain
+- **HR** — Kelola karyawan, approve cuti, review anomali
+- **MANAJER** — Approve cuti team (≤3 hari)
+- **KARYAWAN** — Absen, riwayat, pengajuan izin
 
 ---
 
@@ -139,7 +139,7 @@ SUPER_ADMIN ──▶ HR ──▶ MANAJER ──▶ KARYAWAN
 rekap-in/
 ├── backend/                # Node.js API
 │   ├── src/modules/        # Auth, Attendance, Leave, Admin
-│   ├── src/middleware/     # Auth, Validate, Audit
+│   ├── src/middleware/      # Auth, Validate, Audit
 │   ├── src/jobs/           # Scheduler
 │   └── prisma/             # Schema & Seed
 ├── mobile/                 # Flutter App
@@ -156,14 +156,14 @@ rekap-in/
 
 | Endpoint | Method | Role | Deskripsi |
 |----------|--------|------|-----------|
-| `/api/auth/login` | POST | Public | Login |
-| `/api/auth/register` | POST | Public | Daftar |
-| `/api/attendance/clock` | POST | All | Absen |
-| `/api/attendance/today` | GET | All | Status hari ini |
-| `/api/leave-requests` | POST | All | Pengajuan |
-| `/api/admin/users` | GET | HR+ | Kelola user |
-| `/api/admin/summary` | GET | HR+ | Dashboard |
-| `/api/events` | GET | All | SSE stream |
+| `/api/auth/login` | `POST` | Public | Login |
+| `/api/auth/register` | `POST` | Public | Daftar |
+| `/api/attendance/clock` | `POST` | All | Absen |
+| `/api/attendance/today` | `GET` | All | Status hari ini |
+| `/api/leave-requests` | `POST` | All | Pengajuan izin/cuti |
+| `/api/admin/users` | `GET` | HR+ | Kelola user |
+| `/api/admin/summary` | `GET` | HR+ | Dashboard summary |
+| `/api/events` | `GET` | All | SSE stream |
 
 ---
 
