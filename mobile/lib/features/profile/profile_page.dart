@@ -17,6 +17,7 @@ class ProfilePage extends StatefulWidget {
     required this.tokenStore,
     required this.offlineQueue,
     required this.user,
+    this.onThemeChanged,
     super.key,
   });
 
@@ -24,6 +25,7 @@ class ProfilePage extends StatefulWidget {
   final TokenStore tokenStore;
   final OfflineQueue offlineQueue;
   final Map<String, dynamic> user;
+  final ValueChanged<ThemeMode>? onThemeChanged;
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
@@ -128,6 +130,7 @@ class _ProfilePageState extends State<ProfilePage> {
           apiClient: widget.apiClient,
           tokenStore: widget.tokenStore,
           offlineQueue: widget.offlineQueue,
+          onThemeChanged: widget.onThemeChanged,
         ),
       ),
       (_) => false,

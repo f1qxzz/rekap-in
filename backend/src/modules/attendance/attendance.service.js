@@ -209,6 +209,14 @@ async function createAttendance(user, payload, reqMeta = {}) {
     throw forbidden("Lokasi berada di luar radius kantor");
   }
 
+  const photo = await persistAttendancePhoto({
+    photoBase64: payload.photoBase64,
+    photoUrl: payload.photoUrl,
+    photoHash: payload.photoHash,
+    userId: user.id,
+    sessionId: payload.sessionId,
+  });
+
   const anomaly = buildAnomaly(payload);
   const baseStatus =
     payload.type === "MASUK"
@@ -228,7 +236,8 @@ async function createAttendance(user, payload, reqMeta = {}) {
         provider: payload.provider || null,
         gpsTimestamp: payload.gpsTimestamp ? new Date(payload.gpsTimestamp) : null,
         photoUrl: photo.photoUrl,
-        photoHash: photo.photoHash.toLowerCase(),
+        photoData: photo.photoData,
+        photoHash: (photo.photoHash || payload.photoHash || '').toLowerCase(),
         faceScore: payload.faceMatchScore ?? null,
         faceDetected: payload.faceDetected,
         distanceM: officeDecision.distanceM,

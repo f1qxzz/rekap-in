@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -29,8 +30,6 @@ class _AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
     null,
     'HADIR',
     'TERLAMBAT',
-    'IZIN',
-    'CUTI',
     'REVIEW',
     'DITOLAK',
   ];
@@ -554,82 +553,79 @@ void _showHistoryDetail(
       borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
     ),
     builder: (ctx) => Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppTheme.lineFor(context),
-                borderRadius: BorderRadius.circular(2),
+      padding: EdgeInsets.only(
+        left: 24,
+        right: 24,
+        top: 24,
+        bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppTheme.lineFor(context),
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: meta.color.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(14),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: meta.color.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(meta.icon, color: meta.color, size: 22),
                 ),
-                child: Icon(meta.icon, color: meta.color, size: 22),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '$type - $status',
-                      style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w800,
-                          ),
-                    ),
-                    if (ts.isNotEmpty)
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Text(
-                        formatDateTime(ts),
-                        style: Theme.of(ctx).textTheme.bodySmall,
+                        '$type - $status',
+                        style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w800,
+                            ),
                       ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          if (item['photoUrl'] != null)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: AspectRatio(
-                aspectRatio: 4 / 3,
-                child: Image.network(
-                  item['photoUrl'].toString(),
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
-                    color: AppTheme.lineLightFor(context),
-                    child:
-                        const Center(child: Icon(Icons.broken_image_rounded)),
+                      if (ts.isNotEmpty)
+                        Text(
+                          formatDateTime(ts),
+                          style: Theme.of(ctx).textTheme.bodySmall,
+                        ),
+                    ],
                   ),
                 ),
-              ),
+              ],
             ),
-          const SizedBox(height: 16),
-          _DetailRow(
-              label: 'Jarak', value: '${_formatNumber(item['distanceM'])} m'),
-          _DetailRow(
-              label: 'Akurasi', value: '${_formatNumber(item['accuracy'])} m'),
-          if (item['anomalyFlag'] == true)
+          const SizedBox(height: 20),
+          if (item['photoUrl'] != null && item['photoUrl'] != '')
+            _AttendancePhoto(
+              apiClient: apiClient,
+              photoUrl: item['photoUrl'].toString(),
+              attendanceId: item['id']?.toString(),
+            ),
+            const SizedBox(height: 16),
             _DetailRow(
-                label: 'Anomali',
-                value: item['anomalyReason']?.toString() ?? '-'),
-          const SizedBox(height: 24),
-        ],
+                label: 'Jarak', value: '${_formatNumber(item['distanceM'])} m'),
+            _DetailRow(
+                label: 'Akurasi', value: '${_formatNumber(item['accuracy'])} m'),
+            if (item['anomalyFlag'] == true)
+              _DetailRow(
+                  label: 'Anomali',
+                  value: item['anomalyReason']?.toString() ?? '-'),
+            const SizedBox(height: 8),
+          ],
+        ),
       ),
     ),
   );
@@ -658,6 +654,85 @@ class _DetailRow extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _AttendancePhoto extends StatefulWidget {
+  const _AttendancePhoto({
+    required this.apiClient,
+    required this.photoUrl,
+    this.attendanceId,
+  });
+
+  final ApiClient apiClient;
+  final String photoUrl;
+  final String? attendanceId;
+
+  @override
+  State<_AttendancePhoto> createState() => _AttendancePhotoState();
+}
+
+class _AttendancePhotoState extends State<_AttendancePhoto> {
+  late Future<Uint8List?> _photoFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _photoFuture = _loadPhoto();
+  }
+
+  Future<Uint8List?> _loadPhoto() async {
+    if (widget.attendanceId != null) {
+      final bytes = await widget.apiClient.attendancePhotoById(widget.attendanceId!);
+      if (bytes != null) return bytes;
+    }
+    return widget.apiClient.attendancePhotoBytes(widget.photoUrl);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Uint8List?>(
+      future: _photoFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Container(
+            height: 200,
+            decoration: BoxDecoration(
+              color: AppTheme.lineLightFor(context),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const Center(
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+          );
+        }
+
+        final bytes = snapshot.data;
+        if (bytes == null || bytes.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: AspectRatio(
+            aspectRatio: 4 / 3,
+            child: Image.memory(
+              bytes,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                color: AppTheme.lineLightFor(context),
+                child:
+                    const Center(child: Icon(Icons.broken_image_rounded)),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

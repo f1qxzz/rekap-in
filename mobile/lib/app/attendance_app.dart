@@ -45,9 +45,9 @@ class _AttendanceAppState extends State<AttendanceApp> {
     return tokenStore.hasRefreshToken();
   }
 
-  void _updateThemeMode(ThemeMode mode) {
+  Future<void> _updateThemeMode(ThemeMode mode) async {
     setState(() => _themeMode = mode);
-    tokenStore.saveThemeMode(mode);
+    await tokenStore.saveThemeMode(mode);
   }
 
   @override
@@ -58,6 +58,14 @@ class _AttendanceAppState extends State<AttendanceApp> {
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: _themeMode,
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: TextScaler.noScaling,
+          ),
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
       home: FutureBuilder<bool>(
         future: _ready,
         builder: (context, snapshot) {
@@ -80,6 +88,7 @@ class _AttendanceAppState extends State<AttendanceApp> {
             apiClient: apiClient,
             tokenStore: tokenStore,
             offlineQueue: offlineQueue,
+            onThemeChanged: _updateThemeMode,
           );
         },
       ),

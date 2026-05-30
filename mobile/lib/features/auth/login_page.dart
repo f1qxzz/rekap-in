@@ -19,12 +19,14 @@ class LoginPage extends StatefulWidget {
     required this.apiClient,
     required this.tokenStore,
     required this.offlineQueue,
+    this.onThemeChanged,
     super.key,
   });
 
   final ApiClient apiClient;
   final TokenStore tokenStore;
   final OfflineQueue offlineQueue;
+  final ValueChanged<ThemeMode>? onThemeChanged;
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -107,6 +109,7 @@ class _LoginPageState extends State<LoginPage>
           apiClient: widget.apiClient,
           tokenStore: widget.tokenStore,
           offlineQueue: widget.offlineQueue,
+          onThemeChanged: widget.onThemeChanged,
         ),
         transitionsBuilder: (_, animation, __, child) {
           return FadeTransition(
@@ -129,6 +132,7 @@ class _LoginPageState extends State<LoginPage>
           apiClient: widget.apiClient,
           tokenStore: widget.tokenStore,
           offlineQueue: widget.offlineQueue,
+          onThemeChanged: widget.onThemeChanged,
         ),
         transitionsBuilder: (_, animation, __, child) {
           return SlideTransition(
@@ -213,6 +217,7 @@ class _LoginPageState extends State<LoginPage>
               apiClient: widget.apiClient,
               tokenStore: widget.tokenStore,
               offlineQueue: widget.offlineQueue,
+              onThemeChanged: widget.onThemeChanged,
             ),
           ),
         );

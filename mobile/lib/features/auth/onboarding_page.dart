@@ -13,12 +13,14 @@ class OnboardingPage extends StatefulWidget {
     required this.apiClient,
     required this.tokenStore,
     required this.offlineQueue,
+    this.onThemeChanged,
     super.key,
   });
 
   final ApiClient apiClient;
   final TokenStore tokenStore;
   final OfflineQueue offlineQueue;
+  final ValueChanged<ThemeMode>? onThemeChanged;
 
   @override
   State<OnboardingPage> createState() => _OnboardingPageState();
@@ -92,6 +94,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
             apiClient: widget.apiClient,
             tokenStore: widget.tokenStore,
             offlineQueue: widget.offlineQueue,
+            onThemeChanged: widget.onThemeChanged,
           ),
           transitionsBuilder: (_, animation, __, child) {
             return FadeTransition(

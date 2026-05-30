@@ -12,6 +12,7 @@ router.use(requireAuth);
 router.get("/today", controller.todayStatus);
 router.get("/history", validate(historySchema), controller.history);
 router.get("/offices", controller.listOffices);
+router.get("/:id/photo", controller.attendancePhoto);
 router.post("/clock", attendanceRateLimit, validate(clockSchema), controller.clock);
 router.post("/offline-sync", attendanceRateLimit, validate(offlineSyncSchema), controller.syncOffline);
 

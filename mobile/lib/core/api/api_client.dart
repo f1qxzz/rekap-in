@@ -545,4 +545,17 @@ class ApiClient {
     final bytes = response.data;
     return bytes == null ? null : Uint8List.fromList(bytes);
   }
+
+  Future<Uint8List?> attendancePhotoById(String attendanceId) async {
+    try {
+      final response = await dio.get<List<int>>(
+        '/attendance/$attendanceId/photo',
+        options: Options(responseType: ResponseType.bytes),
+      );
+      final bytes = response.data;
+      return bytes == null ? null : Uint8List.fromList(bytes);
+    } catch (_) {
+      return null;
+    }
+  }
 }

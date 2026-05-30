@@ -45,7 +45,6 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   _DashboardData? _data;
   bool _initialLoading = true;
-  bool _isDarkMode = false;
   bool _actionBusy = false;
   String? _loadError;
   int _unreadNotificationCount = 0;
@@ -273,6 +272,7 @@ class _DashboardPageState extends State<DashboardPage> {
             apiClient: widget.apiClient,
             tokenStore: widget.tokenStore,
             offlineQueue: widget.offlineQueue,
+            onThemeChanged: widget.onThemeChanged,
           ),
         ),
         (_) => false,
@@ -304,6 +304,7 @@ class _DashboardPageState extends State<DashboardPage> {
         tokenStore: widget.tokenStore,
         offlineQueue: widget.offlineQueue,
         user: data.user,
+        onThemeChanged: widget.onThemeChanged,
               );
     } else if (index == 5 && isAdmin) {
       page = AdminDashboardPage(apiClient: widget.apiClient);
@@ -315,6 +316,7 @@ class _DashboardPageState extends State<DashboardPage> {
         tokenStore: widget.tokenStore,
         offlineQueue: widget.offlineQueue,
         user: data.user,
+        onThemeChanged: widget.onThemeChanged,
               );
     }
 
@@ -353,7 +355,6 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    if (_isDarkMode != isDark) WidgetsBinding.instance.addPostFrameCallback((_) { if (mounted) setState(() => _isDarkMode = isDark); });
     final data = _data;
     final hasError = _loadError != null && data == null;
     return Scaffold(
@@ -366,7 +367,7 @@ class _DashboardPageState extends State<DashboardPage> {
             parent: BouncingScrollPhysics(),
           ),
           slivers: [
-            _buildAppBar(context, data),
+            _buildAppBar(context, data, isDark),
             if (hasError)
               SliverFillRemaining(
                 child: _ErrorState(
@@ -489,7 +490,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  SliverAppBar _buildAppBar(BuildContext context, _DashboardData? data) {
+  SliverAppBar _buildAppBar(BuildContext context, _DashboardData? data, bool isDark) {
     return SliverAppBar(
       pinned: true,
       backgroundColor: AppTheme.surfaceFor(context),
@@ -536,10 +537,13 @@ class _DashboardPageState extends State<DashboardPage> {
           IconButton(
             tooltip: 'Mode Gelap/Terang',
             onPressed: widget.onThemeChanged != null
-                ? () { widget.onThemeChanged!(_isDarkMode ? ThemeMode.light : ThemeMode.dark); }
+                ? () {
+                    final newMode = isDark ? ThemeMode.light : ThemeMode.dark;
+                    widget.onThemeChanged!(newMode);
+                  }
                 : null,
             icon: Icon(
-              _isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+              isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
               size: 22,
             ),
           ),

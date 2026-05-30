@@ -14,11 +14,11 @@ let s3Client;
 
 async function persistAttendancePhoto({ photoBase64, photoUrl, photoHash, userId, sessionId }) {
   if (photoUrl && !photoBase64) {
-    return { photoUrl, photoHash };
+    return { photoUrl, photoHash, photoData: null };
   }
 
   if (!photoBase64) {
-    return { photoUrl: null, photoHash };
+    return { photoUrl: null, photoHash, photoData: null };
   }
 
   const bytes = Buffer.from(photoBase64, "base64");
@@ -28,23 +28,10 @@ async function persistAttendancePhoto({ photoBase64, photoUrl, photoHash, userId
     throw badRequest("Hash foto tidak cocok dengan file yang diterima server");
   }
 
-  const objectKey = buildObjectKey({ userId, sessionId, hash: computedHash });
-
-  if (shouldUseS3()) {
-    await uploadToS3(objectKey, bytes);
-    return {
-      photoUrl: `s3://${env.S3_BUCKET}/${objectKey}`,
-      photoHash: computedHash,
-    };
-  }
-
-  const filePath = path.resolve(env.LOCAL_STORAGE_DIR, objectKey);
-  await fs.mkdir(path.dirname(filePath), { recursive: true });
-  await fs.writeFile(filePath, bytes);
-
   return {
-    photoUrl: `local://${objectKey}`,
+    photoUrl: `db://${computedHash}`,
     photoHash: computedHash,
+    photoData: photoBase64,
   };
 }
 

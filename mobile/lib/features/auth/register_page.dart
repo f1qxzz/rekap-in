@@ -13,12 +13,14 @@ class RegisterPage extends StatefulWidget {
     required this.apiClient,
     required this.tokenStore,
     required this.offlineQueue,
+    this.onThemeChanged,
     super.key,
   });
 
   final ApiClient apiClient;
   final TokenStore tokenStore;
   final OfflineQueue offlineQueue;
+  final ValueChanged<ThemeMode>? onThemeChanged;
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
@@ -109,6 +111,7 @@ class _RegisterPageState extends State<RegisterPage> {
           apiClient: widget.apiClient,
           tokenStore: widget.tokenStore,
           offlineQueue: widget.offlineQueue,
+          onThemeChanged: widget.onThemeChanged,
         ),
       ),
     );
