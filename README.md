@@ -1,63 +1,100 @@
 <div align="center">
 
-<img src="mobile/assets/logo/logo_icon.svg" width="100" alt="Rekap In">
+<img src="mobile/assets/logo/logo_icon.svg" width="120" alt="Rekap In Logo">
 
 # Rekap In
 
-**Sistem Absensi Karyawan**
+### Sistem Absensi Karyawan
 
-[![Flutter](https://img.shields.io/badge/Flutter-3.4+-02569B?style=flat-square&logo=flutter)](https://flutter.dev)
-[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=flat-square&logo=node.js)](https://nodejs.org)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=flat-square&logo=postgresql)](https://postgresql.org)
-[![License](https://img.shields.io/badge/License-Private-red?style=flat-square)](#)
+[![Flutter](https://img.shields.io/badge/Flutter-3.4+-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://postgresql.org)
+[![Redis](https://img.shields.io/badge/Redis-7-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
+[![Prisma](https://img.shields.io/badge/Prisma-5-2D3748?style=for-the-badge&logo=prisma&logoColor=white)](https://prisma.io)
+[![License](https://img.shields.io/badge/License-Private-red?style=for-the-badge)](#)
 
-GPS check-in/out · Selfie verification · Offline queue · Real-time dashboard
+<br>
+
+**GPS check-in/out** · **Selfie verification** · **Offline queue** · **Real-time dashboard**
+
+<br>
 
 </div>
 
 ---
 
-## ✨ Fitur
+## Fitur
 
-| Mobile | Backend |
-|--------|---------|
-| Absen masuk/pulang dengan GPS + selfie | Auth JWT (RS256/HS256) |
-| Validasi radius lokasi kantor | Role hierarchy & access control |
-| Riwayat absensi harian & bulanan | Rate limiting & security headers |
-| Pengajuan izin/cuti dengan dokumen | SSE real-time updates |
-| Cek saldo cuti real-time | Scheduler otomatis |
-| Notifikasi push & in-app | Audit log lengkap |
-| Mode offline dengan auto-sync | REST API + OpenAPI docs |
-| Dark mode & Light mode | Docker ready |
+<table>
+<tr>
+<td width="50%">
+
+#### Mobile App
+
+- Absen masuk/pulang dengan GPS + selfie
+- Validasi radius lokasi kantor
+- Riwayat absensi harian & bulanan
+- Pengajuan izin/cuti dengan dokumen
+- Cek saldo cuti real-time
+- Notifikasi push & in-app
+- Mode offline dengan auto-sync
+- Dark mode & Light mode
+
+</td>
+<td width="50%">
+
+#### Backend API
+
+- Auth JWT (RS256/HS256)
+- Role hierarchy & access control
+- Rate limiting & security headers
+- SSE real-time updates
+- Scheduler otomatis
+- Audit log lengkap
+- REST API + OpenAPI docs
+- Docker ready
+
+</td>
+</tr>
+</table>
 
 ---
 
-## 🏗️ Arsitektur
+## Arsitektur
 
 ```
-┌─────────────┐     SSE      ┌─────────────┐     Prisma     ┌─────────────┐
-│  Flutter    │ ◄──────────► │   Node.js   │ ◄────────────► │ PostgreSQL  │
-│  Mobile App │              │   Backend   │                │   Database  │
-└─────────────┘              └─────────────┘                └─────────────┘
+┌─────────────────┐         ┌─────────────────┐         ┌─────────────────┐
+│                 │   SSE   │                 │ Prisma  │                 │
+│   Flutter App   │◄───────►│  Node.js API    │◄───────►│   PostgreSQL    │
+│   (Mobile)      │         │  (Express)      │         │   (Database)    │
+│                 │         │                 │         │                 │
+└─────────────────┘         └────────┬────────┘         └─────────────────┘
                                      │
                                      ▼
-                              ┌─────────────┐
-                              │    Redis    │
-                              │   (Cache)   │
-                              └─────────────┘
+                            ┌─────────────────┐         ┌─────────────────┐
+                            │                 │         │                 │
+                            │     Redis       │         │     MinIO       │
+                            │    (Cache)      │         │   (Storage)     │
+                            │                 │         │                 │
+                            └─────────────────┘         └─────────────────┘
 ```
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
-### Backend
+### 1. Infrastructure
 
 ```bash
-# Start database
-docker-compose up -d postgres redis
+docker-compose up -d
+```
 
-# Setup
+> Menjalankan PostgreSQL, Redis, dan MinIO.
+
+### 2. Backend
+
+```bash
 cd backend
 npm install
 npx prisma generate
@@ -66,7 +103,7 @@ npm run seed
 npm run dev
 ```
 
-### Mobile
+### 3. Mobile
 
 ```bash
 cd mobile
@@ -77,36 +114,53 @@ flutter run
 ### Build APK
 
 ```bash
-flutter build apk
+cd mobile
+flutter build apk --release
 # Output: build/app/outputs/flutter-apk/app-release.apk
 ```
 
 ---
 
-## 👥 Akun Default
+## Akun Default
 
 | Role | Login | Password | Akses |
 |------|-------|----------|-------|
-| **SUPER_ADMIN** | `f1qxzz` | `f1qxzz` | Full akses |
-| **HR** | `hr` | `hr123` | Kelola karyawan |
-| **MANAJER** | `manajer` | `manajer123` | Approve cuti |
-| **KARYAWAN** | `karyawan` | `karyawan123` | Absen & izin |
+| `SUPER_ADMIN` | `f1qxzz` | `f1qxzz` | Full akses |
+| `HR` | `hr` | `hr123` | Kelola karyawan |
+| `MANAJER` | `manajer` | `manajer123` | Approve cuti |
+| `KARYAWAN` | `karyawan` | `karyawan123` | Absen & izin |
 
 > Login menggunakan email atau NIP.
 
 ---
 
-## 📱 Workflow
+## Role Hierarchy
 
 ```
-┌────────┐         ┌────────┐         ┌────────┐         ┌────────┐
-│ LOGIN  │────────▶│ ABSEN  │────────▶│  IZIN  │────────▶│APPROVE │
-└────────┘         └────────┘         └────────┘         └────────┘
-   │                  │                  │                  │
-   ▼                  ▼                  ▼                  ▼
- JWT Auth          GPS+Selfie        Pilih Jenis        Manager→HR
- Role Check        Validasi          Upload Doc         Auto Saldo
-                   Radius            Tanggal            Update
+SUPER_ADMIN ─────► HR ─────► MANAJER ─────► KARYAWAN
+    (4)            (3)         (2)             (1)
+```
+
+| Role | Deskripsi |
+|------|-----------|
+| `SUPER_ADMIN` | Tidak bisa diubah oleh role lain |
+| `HR` | Kelola karyawan, approve cuti, review anomali |
+| `MANAJER` | Approve cuti team (≤3 hari) |
+| `KARYAWAN` | Absen, riwayat, pengajuan izin |
+
+---
+
+## Workflow
+
+```
+┌──────────┐      ┌──────────┐      ┌──────────┐      ┌──────────┐
+│  LOGIN   │─────►│  ABSEN   │─────►│   IZIN   │─────►│ APPROVE  │
+└──────────┘      └──────────┘      └──────────┘      └──────────┘
+      │                │                │                │
+      ▼                ▼                ▼                ▼
+  JWT Auth        GPS+Selfie       Pilih Jenis      Manager→HR
+  Role Check      Validasi         Upload Doc       Auto Saldo
+                  Radius           Tanggal          Update
 ```
 
 | Step | Karyawan | Manager/HR |
@@ -119,40 +173,7 @@ flutter build apk
 
 ---
 
-## 🔐 Role Hierarchy
-
-```
-SUPER_ADMIN ──▶ HR ──▶ MANAJER ──▶ KARYAWAN
-    (4)         (3)      (2)         (1)
-```
-
-- **SUPER_ADMIN** — Tidak bisa diubah oleh role lain
-- **HR** — Kelola karyawan, approve cuti, review anomali
-- **MANAJER** — Approve cuti team (≤3 hari)
-- **KARYAWAN** — Absen, riwayat, pengajuan izin
-
----
-
-## 📂 Struktur Project
-
-```
-rekap-in/
-├── backend/                # Node.js API
-│   ├── src/modules/        # Auth, Attendance, Leave, Admin
-│   ├── src/middleware/      # Auth, Validate, Audit
-│   ├── src/jobs/           # Scheduler
-│   └── prisma/             # Schema & Seed
-├── mobile/                 # Flutter App
-│   ├── lib/features/       # Auth, Dashboard, Attendance, Leave
-│   ├── lib/core/           # API, Camera, Offline, Realtime
-│   └── assets/logo/        # Logo SVG
-├── docs/                   # Dokumentasi
-└── docker-compose.yml      # Infrastructure
-```
-
----
-
-## 🔌 API Endpoints
+## API Endpoints
 
 | Endpoint | Method | Role | Deskripsi |
 |----------|--------|------|-----------|
@@ -167,16 +188,98 @@ rekap-in/
 
 ---
 
-## ⚙️ Environment
+## Tech Stack
+
+<details>
+<summary><strong>Backend</strong></summary>
+
+- **Runtime**: Node.js 18+
+- **Framework**: Express.js
+- **ORM**: Prisma 5
+- **Database**: PostgreSQL 16
+- **Cache**: Redis 7
+- **Auth**: JWT (RS256/HS256) + Argon2
+- **Validation**: Zod
+- **Storage**: MinIO / Local
+- **Docs**: Swagger UI
+
+</details>
+
+<details>
+<summary><strong>Mobile</strong></summary>
+
+- **Framework**: Flutter 3.4+
+- **State**: Provider
+- **HTTP**: Dio
+- **Local DB**: SQLite (sqflite)
+- **Camera**: camera + Google ML Kit
+- **Location**: geolocator + google_maps_flutter
+- **Secure Storage**: flutter_secure_storage
+- **Push**: Firebase Messaging
+- **Biometric**: local_auth
+
+</details>
+
+<details>
+<summary><strong>Infrastructure</strong></summary>
+
+- **Container**: Docker + Docker Compose
+- **Database**: PostgreSQL 16 Alpine
+- **Cache**: Redis 7 Alpine
+- **Object Storage**: MinIO
+- **Tunnel**: Cloudflare Tunnel (optional)
+
+</details>
+
+---
+
+## Struktur Project
+
+```
+absensi/
+├── backend/                    # Node.js API
+│   ├── src/
+│   │   ├── modules/            # Auth, Attendance, Leave, Admin
+│   │   ├── middleware/         # Auth, Validate, Audit
+│   │   ├── jobs/               # Scheduler
+│   │   ├── lib/                # Shared utilities
+│   │   └── config/             # App configuration
+│   ├── prisma/                 # Schema & Seed
+│   ├── scripts/                # Build & check scripts
+│   ├── tests/                  # Test files
+│   └── storage/                # Local file storage
+├── mobile/                     # Flutter App
+│   ├── lib/
+│   │   ├── features/           # Auth, Dashboard, Attendance, Leave
+│   │   ├── core/               # API, Camera, Offline, Realtime
+│   │   └── app/                # App shell & theme
+│   └── assets/logo/            # Logo SVG
+├── docs/                       # Dokumentasi
+├── scripts/                    # Root build scripts
+└── docker-compose.yml          # Infrastructure
+```
+
+---
+
+## Environment
 
 ```env
 PORT=8080
 DATABASE_URL=postgresql://attendance:attendance@localhost:5432/attendance
 REDIS_URL=redis://localhost:6379
-JWT_PRIVATE_KEY=...
-JWT_PUBLIC_KEY=...
+JWT_PRIVATE_KEY=CHANGE_ME
+JWT_PUBLIC_KEY=CHANGE_ME
 APP_TIMEZONE=Asia/Jakarta
+STORAGE_PROVIDER=local
 ```
+
+> Lihat `.env.example` untuk konfigurasi lengkap.
+
+---
+
+## License
+
+Private — All rights reserved.
 
 ---
 
