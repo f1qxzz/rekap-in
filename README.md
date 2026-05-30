@@ -64,20 +64,20 @@
 ## Arsitektur
 
 ```
-┌─────────────────┐         ┌─────────────────┐         ┌─────────────────┐
-│                 │   SSE   │                 │ Prisma  │                 │
-│   Flutter App   │◄───────►│  Node.js API    │◄───────►│   PostgreSQL    │
-│   (Mobile)      │         │  (Express)      │         │   (Database)    │
-│                 │         │                 │         │                 │
-└─────────────────┘         └────────┬────────┘         └─────────────────┘
-                                     │
-                                     ▼
-                            ┌─────────────────┐         ┌─────────────────┐
-                            │                 │         │                 │
-                            │     Redis       │         │     MinIO       │
-                            │    (Cache)      │         │   (Storage)     │
-                            │                 │         │                 │
-                            └─────────────────┘         └─────────────────┘
+  ┌───────────────┐         ┌───────────────┐         ┌───────────────┐
+  │               │   SSE   │               │  Prisma  │               │
+  │  Flutter App  │◄───────►│  Node.js API  │◄───────►│  PostgreSQL   │
+  │  (Mobile)     │         │  (Express)    │         │  (Database)   │
+  │               │         │               │         │               │
+  └───────────────┘         └───────┬───────┘         └───────────────┘
+                                    │
+                                    ▼
+                           ┌───────────────┐         ┌───────────────┐
+                           │               │         │               │
+                           │     Redis     │         │     MinIO     │
+                           │    (Cache)    │         │   (Storage)   │
+                           │               │         │               │
+                           └───────────────┘         └───────────────┘
 ```
 
 ---
@@ -137,8 +137,8 @@ flutter build apk --release
 ## Role Hierarchy
 
 ```
-SUPER_ADMIN ─────► HR ─────► MANAJER ─────► KARYAWAN
-    (4)            (3)         (2)             (1)
+  SUPER_ADMIN ──────► HR ──────► MANAJER ──────► KARYAWAN
+      (4)             (3)          (2)              (1)
 ```
 
 | Role | Deskripsi |
@@ -153,14 +153,14 @@ SUPER_ADMIN ─────► HR ─────► MANAJER ─────► 
 ## Workflow
 
 ```
-┌──────────┐      ┌──────────┐      ┌──────────┐      ┌──────────┐
-│  LOGIN   │─────►│  ABSEN   │─────►│   IZIN   │─────►│ APPROVE  │
-└──────────┘      └──────────┘      └──────────┘      └──────────┘
-      │                │                │                │
-      ▼                ▼                ▼                ▼
-  JWT Auth        GPS+Selfie       Pilih Jenis      Manager→HR
-  Role Check      Validasi         Upload Doc       Auto Saldo
-                  Radius           Tanggal          Update
+  ┌──────────┐       ┌──────────┐       ┌──────────┐       ┌──────────┐
+  │  LOGIN   │──────►│  ABSEN   │──────►│   IZIN   │──────►│ APPROVE  │
+  └────┬─────┘       └────┬─────┘       └────┬─────┘       └────┬─────┘
+       │                  │                  │                  │
+       ▼                  ▼                  ▼                  ▼
+   JWT Auth          GPS + Selfie       Pilih Jenis        Manager → HR
+   Role Check        Validasi           Upload Doc         Auto Saldo
+                     Radius             Tanggal            Update
 ```
 
 | Step | Karyawan | Manager/HR |
