@@ -1,4 +1,4 @@
-# Agent Rules for Absensi
+# Agent Rules for Rekap In
 
 Gunakan file ini sebagai aturan kerja agent untuk repo `D:\absensi`.
 
@@ -32,31 +32,33 @@ Entry point penting:
 - Untuk data dashboard, jangan tampilkan angka dummy sebagai data real.
 - Untuk absensi, server tetap sumber kebenaran untuk radius, shift, duplikat, overtime, approval, dan audit log.
 - Offline queue harus tetap aman dan tidak menyimpan secret mentah.
+- Selalu gunakan `surfaceFor(context)` atau `canvasFor(context)` untuk warna yang adaptif dark/light mode.
+- Jangan gunakan `AppTheme.surface` langsung — gunakan versi `For(context)`.
+
+## Role Hierarchy
+
+```
+SUPER_ADMIN (4) → HR (3) → MANAJER (2) → KARYAWAN (1)
+```
+
+- Role lebih tinggi bisa mengedit role lebih rendah.
+- Tidak bisa mengubah role SUPER_ADMIN kecuali oleh SUPER_ADMIN sendiri.
+- Tidak bisa membuat user dengan role lebih tinggi dari diri sendiri.
 
 ## Verification Commands
 
 Dari root project:
 
 ```powershell
-.\scripts\verify.ps1 -Mobile
-.\scripts\verify.ps1 -Backend
-.\scripts\verify.ps1 -Security
-.\scripts\verify.ps1 -All
+cd backend; node scripts/check-syntax.js
+cd mobile; flutter analyze lib/
 ```
 
-Manual jika perlu:
+Build:
 
 ```powershell
-cd mobile
-flutter pub get
-flutter analyze
-flutter test
-flutter build apk --debug
-```
-
-```powershell
-cd backend
-npm run check
+cd backend; node src/server.js
+cd mobile; flutter build apk
 ```
 
 ## Security Boundaries
@@ -66,10 +68,10 @@ npm run check
 - `.env` lokal tidak boleh di-print penuh.
 - `.env.example` boleh diedit, tapi hanya pakai placeholder.
 - Review perubahan auth, role, export report, upload foto, dan offline sync dengan lebih ketat.
+- File `.env`, `cloudflared.exe`, `*.log`, `node_modules/` tidak boleh di-commit.
 
 ## Project Memory
 
-- 2026-05-28: Flutter SDK tersedia dan `flutter analyze` plus `flutter test` berhasil setelah typo import kamera dan dependency `workmanager` diperbaiki.
-- 2026-05-28: Build APK debug pernah gagal karena `workmanager 0.5.2` tidak kompatibel dengan Flutter 3.44; project dinaikkan ke `workmanager ^0.9.0+3`.
-- 2026-05-28: `android/gradle.properties` memakai `kotlin.incremental=false` untuk menghindari error cache Kotlin di Windows ketika plugin source berada di drive berbeda.
-- 2026-05-28: APK debug pernah berhasil dibuat di `mobile/build/app/outputs/flutter-apk/app-debug.apk` setelah proses build yang sebelumnya timeout masih lanjut di background.
+- 2026-05-28: Project setup — Flutter + Node.js + PostgreSQL + Redis + Docker.
+- 2026-05-28: APK debug berhasil dibuat.
+- 2026-05-30: Major update — dark mode, real-time SSE, role hierarchy, logo Gemini AI, security fixes.

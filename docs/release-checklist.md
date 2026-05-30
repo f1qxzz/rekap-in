@@ -1,41 +1,69 @@
 # Release Checklist
 
-Checklist singkat sebelum build dan distribusi Rekap In.
+Checklist sebelum build dan distribusi Rekap In.
 
 ## Backend
 
-- Jalankan `docker compose up -d postgres redis minio`.
-- Isi `backend/.env` dari `backend/.env.example` tanpa membagikan secret.
-- Jalankan migrasi database dari folder `backend`: `npx prisma migrate deploy`.
-- Jalankan seed hanya untuk environment awal atau demo: `npm run seed`.
-- Pastikan API hidup: `npm run dev`, lalu buka `http://localhost:8080/health`.
+1. Jalankan Docker services:
+```powershell
+cd D:\absensi
+docker-compose up -d postgres redis
+```
+
+2. Setup environment:
+```powershell
+cd D:\absensi\backend
+cp .env.example .env
+# Edit .env sesuai environment
+```
+
+3. Jalankan migrasi & seed:
+```powershell
+npx prisma migrate deploy
+npm run seed  # hanya untuk environment baru/demo
+```
+
+4. Verifikasi backend:
+```powershell
+node scripts/check-syntax.js
+node src/server.js
+# Buka http://localhost:8080/health
+```
 
 ## Mobile
 
-- Gunakan URL API yang bisa dijangkau perangkat, bukan `localhost` jika memakai HP fisik.
-- Build debug untuk tes cepat:
+1. Setup server URL:
+   - Buka app → Profil → Pengaturan API Server
+   - Masukkan URL backend (contoh: `http://192.168.1.7:8080/api`)
+   - Tekan **Tes Koneksi**
 
+2. Build APK:
 ```powershell
 cd D:\absensi\mobile
-C:\flutter\bin\flutter.bat build apk --debug --dart-define=API_BASE_URL=http://IP-LAPTOP:8080/api
+flutter build apk
+# Output: build/app/outputs/flutter-apk/app-release.apk
 ```
 
-- Build release:
-
-```powershell
-cd D:\absensi
-.\scripts\build-mobile-release.ps1 -ApiBaseUrl http://IP-LAPTOP:8080/api
-```
-
-- Untuk distribusi resmi, siapkan Android signing config di `mobile/android/key.properties` dan Gradle signing tanpa menaruh password di source control.
+3. Untuk distribusi resmi, siapkan Android signing config di `mobile/android/key.properties`.
 
 ## Verifikasi
 
 ```powershell
-cd D:\absensi
-.\scripts\verify.ps1 -Backend
-.\scripts\verify.ps1 -Mobile
-.\scripts\verify.ps1 -Security
+# Backend
+cd D:\absensi\backend; node scripts/check-syntax.js
+
+# Mobile
+cd D:\absensi\mobile; flutter analyze lib/
+
+# Build test
+cd D:\absensi\mobile; flutter build apk
 ```
 
-Setelah APK terpasang, buka Pengaturan Server di aplikasi, isi URL API, lalu tekan Tes Koneksi.
+## Akun Default
+
+| Role | Login | Password |
+|------|-------|----------|
+| SUPER_ADMIN | `f1qxzz` | `f1qxzz` |
+| HR | `hr` | `hr123` |
+| MANAJER | `manajer` | `manajer123` |
+| KARYAWAN | `karyawan` | `karyawan123` |

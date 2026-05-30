@@ -1,24 +1,37 @@
-# Assets Directory
+# Assets
 
-Place the following files here:
+## Logo
 
-- `app_icon.png` — App icon (1024x1024 PNG, no alpha)
-- `splash_logo.png` — Splash screen logo (512x512 PNG with transparency)
-- `onboarding_*.png` — Onboarding illustrations (optional)
+Logo dari Gemini AI SVG di `assets/logo/`:
 
-## Generating Icons
+| File | Kegunaan |
+|------|----------|
+| `logo_icon.svg` | App icon (Android/iOS) |
+| `logo_full.svg` | Full logo (icon + "REKAP IN" text) |
+| `logo_dark.svg` | Dark mode variant dengan glow |
+| `logo_light.svg` | Monochrome untuk watermark |
 
-After placing `app_icon.png`, run:
+### Generate App Icon dari SVG
 
 ```bash
-flutter pub run flutter_launcher_icons
+# Install sharp
+npm install sharp
+
+# Generate icons
+node generate_icons.js
 ```
 
-Add to `pubspec.yaml`:
+Output:
+- Android: `android/app/src/main/res/mipmap-*/ic_launcher*.png`
+- iOS: `ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png`
+
+## Flutter Assets
+
+Assets di-register di `pubspec.yaml`:
 
 ```yaml
-flutter_launcher_icons:
-  android: true
-  ios: true
-  image_path: "assets/app_icon.png"
+flutter:
+  assets:
+    - assets/
+    - assets/logo/
 ```
