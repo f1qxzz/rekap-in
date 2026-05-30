@@ -1,0 +1,70 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build
+dist/
+build/
+*.log
+*.tmp
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Database
+*.sqlite
+*.db
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+android/.gradle/
+ios/Pods/
+ios/.symlinks/
+*.apk
+*.aab
+*.ipa
+
+# Dart
+.packages
+pubspec.lock
+
+# Docker
+docker-compose.override.yml
+
+# Backend
+backend/.env
+backend/.tunnel-url
+backend/.tunnel-*.log
+backend/cloudflared.exe
+backend/storage/
+
+# Mobile
+mobile/build/
+mobile/android/app/build/
+mobile/ios/Build/
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/node_modules/
+mobile/package-lock.json
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Misc
+*.swp
+*.swo
+*~

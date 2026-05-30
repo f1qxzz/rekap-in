@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 680" width="512" height="680">
+  <defs>
+    <linearGradient id="bgGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7E22CE" />
+      <stop offset="100%" stop-color="#A855F7" />
+    </linearGradient>
+  </defs>
+  <g transform="translate(35, 10)">
+    <rect width="442" height="442" rx="97" fill="url(#bgGrad2)" />
+    <circle cx="221" cy="221" r="138" fill="none" stroke="#FFFFFF" stroke-width="11" />
+    <line x1="221" y1="83" x2="221" y2="109" stroke="#FFFFFF" stroke-width="11" stroke-linecap="round"/>
+    <line x1="359" y1="221" x2="333" y2="221" stroke="#FFFFFF" stroke-width="11" stroke-linecap="round"/>
+    <line x1="221" y1="359" x2="221" y2="333" stroke="#FFFFFF" stroke-width="11" stroke-linecap="round"/>
+    <line x1="83" y1="221" x2="109" y2="221" stroke="#FFFFFF" stroke-width="11" stroke-linecap="round"/>
+    <path d="M 164 225 L 208 268 L 285 173" fill="none" stroke="#FFFFFF" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+  <text x="256" y="550" font-family="sans-serif" font-weight="800" font-size="64" fill="#FFFFFF" letter-spacing="4" text-anchor="middle">REKAP</text>
+  <text x="256" y="620" font-family="sans-serif" font-weight="400" font-size="48" fill="#FFFFFF" fill-opacity="0.6" letter-spacing="8" text-anchor="middle">IN</text>
+</svg>

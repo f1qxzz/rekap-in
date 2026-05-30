@@ -1,0 +1,309 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  KARYAWAN
+  MANAJER
+  HR
+  SUPER_ADMIN
+}
+
+enum AttendanceType {
+  MASUK
+  PULANG
+  LEMBUR
+}
+
+enum AttendanceStatus {
+  HADIR
+  TERLAMBAT
+  ABSEN
+  IZIN
+  CUTI
+  DINAS_LUAR
+  REVIEW
+  DITOLAK
+}
+
+enum LeaveType {
+  SAKIT
+  CUTI_TAHUNAN
+  DINAS_LUAR
+  IZIN_MENDESAK
+  CUTI_MELAHIRKAN
+  CUTI_MENIKAH
+}
+
+enum ApprovalStatus {
+  DRAFT
+  MENUNGGU_MANAJER
+  MENUNGGU_HR
+  DISETUJUI
+  DITOLAK
+  ESKALASI
+}
+
+enum OvertimeStatus {
+  MENUNGGU
+  DISETUJUI
+  DITOLAK
+  ESKALASI
+}
+
+model Department {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  users     User[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("departments")
+}
+
+model User {
+  id                   String           @id @default(uuid())
+  name                 String
+  email                String           @unique
+  nip                  String           @unique
+  phone                String?          @map("phone_number")
+  passwordHash         String           @map("password_hash")
+  role                 UserRole         @default(KARYAWAN)
+  photoUrl             String?          @map("photo_url")
+  isActive             Boolean          @default(true) @map("is_active")
+  isApproved           Boolean          @default(false) @map("is_approved")
+  emailVerified        Boolean          @default(false) @map("email_verified")
+  emailVerifyTokenHash String?          @map("email_verify_token_hash")
+  emailVerifyExpiresAt DateTime?        @map("email_verify_expires_at")
+  failedLoginAttempts  Int              @default(0) @map("failed_login_attempts")
+  lockoutUntil         DateTime?        @map("lockout_until")
+  fcmToken             String?          @map("fcm_token")
+  notificationTime     String?          @map("notification_time")
+  departmentId         String?          @map("department_id")
+  shiftId              String?          @map("shift_id")
+  directManagerId      String?          @map("direct_manager_id")
+  createdAt            DateTime         @default(now()) @map("created_at")
+  updatedAt            DateTime         @updatedAt @map("updated_at")
+  department           Department?      @relation(fields: [departmentId], references: [id])
+  shift                Shift?           @relation(fields: [shiftId], references: [id])
+  directManager        User?            @relation("ManagerEmployees", fields: [directManagerId], references: [id])
+  employees            User[]           @relation("ManagerEmployees")
+  officeLocations      OfficeLocation[] @relation("UserOfficeLocations")
+  refreshTokens        RefreshToken[]
+  passwordResetTokens   PasswordResetToken[]
+  attendances          Attendance[]
+  leaveRequests        LeaveRequest[]
+  leaveBalances        LeaveBalance[]
+  notifications        Notification[]
+  auditLogs            AuditLog[]        @relation("AdminAuditLogs")
+
+  @@map("users")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  userId    String    @map("user_id")
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@index([userId, usedAt])
+  @@map("password_reset_tokens")
+}
+
+model RefreshToken {
+  id         String    @id @default(uuid())
+  userId     String    @map("user_id")
+  tokenHash  String    @unique @map("token_hash")
+  userAgent  String?   @map("user_agent")
+  ipAddress  String?   @map("ip_address")
+  expiresAt  DateTime  @map("expires_at")
+  revokedAt  DateTime? @map("revoked_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  user       User      @relation(fields: [userId], references: [id])
+
+  @@map("refresh_tokens")
+}
+
+model Shift {
+  id                   String       @id @default(uuid())
+  name                 String
+  startTime            String       @map("start_time")
+  endTime              String       @map("end_time")
+  workDays             Int[]        @map("work_days")
+  lateToleranceMinutes Int          @default(10) @map("late_tolerance_minutes")
+  isFlexible           Boolean      @default(false) @map("is_flexible")
+  flexibleHours        Int?         @map("flexible_hours")
+  createdAt            DateTime     @default(now()) @map("created_at")
+  updatedAt            DateTime     @updatedAt @map("updated_at")
+  users                User[]
+  attendances          Attendance[]
+
+  @@map("shifts")
+}
+
+model OfficeLocation {
+  id           String   @id @default(uuid())
+  name         String
+  latitude     Float
+  longitude    Float
+  radiusMeters Int      @default(100) @map("radius_meters")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  users        User[]   @relation("UserOfficeLocations")
+
+  @@map("office_locations")
+}
+
+model Attendance {
+  id                       String            @id @default(uuid())
+  userId                   String            @map("user_id")
+  type                     AttendanceType
+  timestamp                DateTime
+  lat                      Float
+  lng                      Float
+  accuracy                 Float
+  provider                 String?
+  gpsTimestamp             DateTime?         @map("gps_timestamp")
+  photoUrl                 String            @map("photo_url")
+  photoHash                String            @map("photo_hash")
+  faceScore                Float?            @map("face_score")
+  faceDetected             Boolean           @default(false) @map("face_detected")
+  distanceM                Float             @map("distance_m")
+  withinRadius             Boolean           @map("within_radius")
+  shiftId                  String?           @map("shift_id")
+  deviceIdEncrypted        String?           @map("device_id_encrypted")
+  ipAddressEncrypted       String?           @map("ip_address_encrypted")
+  isMockGps                Boolean           @default(false) @map("is_mock_gps")
+  status                   AttendanceStatus
+  anomalyFlag              Boolean           @default(false) @map("anomaly_flag")
+  anomalyReason            String?           @map("anomaly_reason")
+  notes                    String?
+  syncedAt                 DateTime?         @map("synced_at")
+  createdAt                DateTime          @default(now()) @map("created_at")
+  updatedAt                DateTime          @updatedAt @map("updated_at")
+  user                     User              @relation(fields: [userId], references: [id])
+  shift                    Shift?            @relation(fields: [shiftId], references: [id])
+  overtimeRecord           OvertimeRecord?
+
+  @@unique([userId, type, timestamp])
+  @@index([userId, timestamp])
+  @@index([status, anomalyFlag])
+  @@map("attendances")
+}
+
+model LeaveRequest {
+  id                String         @id @default(uuid())
+  userId            String         @map("user_id")
+  type              LeaveType
+  dateFrom          DateTime       @map("date_from")
+  dateTo            DateTime       @map("date_to")
+  reason            String
+  documentUrl       String?        @map("document_url")
+  replacementUserId String?        @map("replacement_user_id")
+  status            ApprovalStatus @default(MENUNGGU_MANAJER)
+  managerApprovedAt DateTime?      @map("manager_approved_at")
+  hrApprovedAt      DateTime?      @map("hr_approved_at")
+  rejectionReason   String?        @map("rejection_reason")
+  managerComment    String?        @map("manager_comment")
+  hrComment         String?        @map("hr_comment")
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @updatedAt @map("updated_at")
+  user              User           @relation(fields: [userId], references: [id])
+
+  @@index([userId, status])
+  @@map("leave_requests")
+}
+
+model LeaveBalance {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  year        Int
+  annualQuota Int      @default(12) @map("annual_quota")
+  used        Int      @default(0)
+  remaining   Int      @default(12)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, year])
+  @@map("leave_balances")
+}
+
+model OvertimeRecord {
+  id              String         @id @default(uuid())
+  attendanceId    String         @unique @map("attendance_id")
+  durationMinutes Int            @map("duration_minutes")
+  status          OvertimeStatus @default(MENUNGGU)
+  approvedBy      String?        @map("approved_by")
+  approvedAt      DateTime?      @map("approved_at")
+  escalatedAt     DateTime?      @map("escalated_at")
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @updatedAt @map("updated_at")
+  attendance      Attendance     @relation(fields: [attendanceId], references: [id])
+
+  @@map("overtime_records")
+}
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  adminUserId  String?  @map("admin_user_id")
+  action       String
+  targetTable  String   @map("target_table")
+  targetId     String?  @map("target_id")
+  beforeData   Json?    @map("before_data")
+  afterData    Json?    @map("after_data")
+  reason       String?
+  createdAt    DateTime @default(now()) @map("created_at")
+  admin        User?    @relation("AdminAuditLogs", fields: [adminUserId], references: [id])
+
+  @@index([targetTable, targetId])
+  @@map("audit_logs")
+}
+
+model OfflineQueue {
+  id              String    @id @default(uuid())
+  userId          String    @map("user_id")
+  payloadEncrypted String   @map("payload_encrypted")
+  createdAtLocal  DateTime  @map("created_at_local")
+  synced          Boolean   @default(false)
+  syncAt          DateTime? @map("sync_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  @@index([userId, synced])
+  @@map("offline_queue")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  type      String
+  title     String
+  body      String
+  read      Boolean  @default(false)
+  metadata  Json?
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, read])
+  @@map("notifications")
+}
+
+model Holiday {
+  id        String   @id @default(uuid())
+  name      String
+  date      DateTime
+  isCustom  Boolean  @default(false) @map("is_custom")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([date, name])
+  @@map("holidays")
+}
